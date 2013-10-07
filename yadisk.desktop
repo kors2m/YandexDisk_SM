@@ -10,9 +10,9 @@ X-KDE-Priority=TopLevel
 
 [Desktop Action getPublicLink]
 Name=Скопировать публичную ссылку
-Exec=yandex/disk.sh get_link "%f"
+Exec=`kde4-config --localprefix`share/kde4/services/yandex/disk.sh get_link "%f"
 
 
 [Desktop Action save]
 Name=Сохранить на Я.Диск...
-Exec=yandex/disk.sh save "%f"
+Exec=`kde4-config --localprefix`share/kde4/services/yandex/disk.sh save "%f"
