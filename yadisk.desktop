@@ -8,10 +8,11 @@ X-KDE-StartupNotify=false
 X-KDE-Priority=TopLevel
 
 
-[Desktop Action save]
-Name=Сохранить на Я.Диск...
-Exec=/home/kors2m/.kde4/share/kde4/services/yandex/disk.sh save "%f"
-
 [Desktop Action getPublicLink]
 Name=Скопировать публичную ссылку
-Exec=/home/kors2m/.kde4/share/kde4/services/yandex/disk.sh get_link "%f"
+Exec=~/.kde4/share/kde4/services/yandex/disk.sh get_link "%f"
+
+
+[Desktop Action save]
+Name=Сохранить на Я.Диск...
+Exec=~/.kde4/share/kde4/services/yandex/disk.sh save "%f"

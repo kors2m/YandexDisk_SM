@@ -29,7 +29,7 @@ write(){
 
 is_file_exists(){
     if [ -f "$YANDEX_DISK_HOME"/"${fileurl##*/}"  -o -d "$YANDEX_DISK_HOME"/"${fileurl##*/}" ]; then
-		kdialog --warningyesno "Файл с именем <b>"${fileurl##*/}"</b> уже существует в дириктории Я.Диск\n\nЗаменить?" --title "Яндекс.Диск"
+		kdialog --warningyesno "Файл с именем <b>"${fileurl##*/}"</b> уже существует в директории Я.Диск<br/><br/>Заменить?" --title "Яндекс.Диск"
     fi	
 }
 
@@ -60,7 +60,7 @@ check_path(){
 save(){
 	check_path
 	if [[ $? = 0 ]]; then
-		path=`kdialog --getsavefilename  $YANDEX_DISK_HOME"/"${fileurl##*/} --title "Выбирите директорию"`
+		path=`kdialog --getsavefilename  $YANDEX_DISK_HOME"/"${fileurl##*/} --title "Выберите директорию"`
 		if [[ $? = 0 ]]; then
 			copy $path
 		fi
