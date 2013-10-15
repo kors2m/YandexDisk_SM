@@ -53,6 +53,5 @@ Restart=on-failure
 WantedBy=multi-user.target
 ```
 
-Enable a unit to be started on bootup:
-
+Enable a unit to be started on bootup: 
 ```# systemctl enable yadisk@USERNAME.service ```
