@@ -1,8 +1,8 @@
 #!/bin/bash 
 
+ACTION=$1
 FILE_URL=$2
 LANGUAGE=$3
-YANDEX_DISK_HOME=`yandex-disk status | sed -n 2p | cut -f 2 -d "'"`
 PATH_SERVICE_MENU="`kde4-config --localprefix`share/kde4/services/"
 
 
@@ -11,15 +11,21 @@ notify(){
 }
 
 get_link(){
+	is_path_matches_yadisk
+	if [[ $? = 0 ]]; then
+		publish
+		exit 0
+	fi
+
 	is_file_exists
 	if [[ $? = 0 ]]; then
-		rm -f "$YANDEX_DISK_HOME"/"${FILE_URL##*/}"
-		write
+		rm -f "$YANDEX_DISK_HOME/${FILE_URL##*/}"
+		publish 
 	fi
 }
 
-write(){
-	msg=`yandex-disk publish $FILE_URL`
+publish(){
+	msg=`yandex-disk publish "$FILE_URL"`
 	if [[ $? = 0 ]]; then
 		echo $msg | xsel -i -b 
 		notify "$available_link"
@@ -29,7 +35,7 @@ write(){
 }
 
 is_file_exists(){
-    if [ -f "$YANDEX_DISK_HOME"/"${FILE_URL##*/}"  -o -d "$YANDEX_DISK_HOME"/"${FILE_URL##*/}" ]; then
+    if [ -f "$YANDEX_DISK_HOME/${FILE_URL##*/}"  -o -d "$YANDEX_DISK_HOME/${FILE_URL##*/}" ]; then
 		kdialog --warningyesno "$file_replace" --title "$title"
     fi	
 }
@@ -48,30 +54,24 @@ copy() {
 
 is_path_matches_yadisk(){
 	echo $FILE_URL | grep "$YANDEX_DISK_HOME"
+}
+
+save(){
+	is_path_matches_yadisk
 	if [[ $? = 0 ]]; then
 		notify "$file_exists"
 		exit;
 	fi
-}
 
-check_path(){
-	is_path_matches_yadisk
-}
-
-save(){
-	check_path
+	path=`kdialog --getsavefilename  "$YANDEX_DISK_HOME/${FILE_URL##*/}" --title "$choose_dir"`
 	if [[ $? = 0 ]]; then
-		path=`kdialog --getsavefilename  $YANDEX_DISK_HOME"/"${FILE_URL##*/} --title "$choose_dir"`
-		if [[ $? = 0 ]]; then
-			copy $path
-		fi
+		copy $path
 	fi
 }
 
 is_run_daemon(){
 	pgrep yandex-disk
 }
-
 
 
 #Translations
@@ -83,7 +83,7 @@ load_ru(){
 	choose_dir="Выберите директорию"
 	file_replace="Файл с именем <b>${FILE_URL##*/}</b> уже существует в директории $title<br/><br/>Заменить?"
 	available_link="Публичная ссылка на файл <b>${FILE_URL##*/}</b> скопирована в буфер"
-	file_exists="Этот файл уже и так находится в директории $title"
+	file_exists="Этот файл уже и так находится в вашей папке $title"
 	daemon="Ошибка: демон не запущен"
 }
 
@@ -97,22 +97,23 @@ load_en(){
 			Would you like to replace it and copy a public link to our clipboard?"
 	available_link="Public link to <b>${FILE_URL##*/}</b> copied to clipboard"
 	file_exists="File is already in you $title folder"
-	daemon="Daemon not running"
+	daemon="Error: daemon not running"
 }
-
-
-is_run_daemon
-if [[ $? != 0 ]]; then
-	notify $daemon
-	exit 1;
-fi
 
 case "$LANGUAGE" in
 	ru ) load_ru ;;
 	*) load_en ;;
 esac
 
-case "$1" in
-    	save) save ;;
+is_run_daemon
+if [[ $? = 1 ]]; then
+	notify "$daemon"
+	exit
+fi
+
+YANDEX_DISK_HOME=`yandex-disk status | sed -n 2p | cut -f 2 -d "'"`
+
+case "$ACTION" in
+	save) save ;;
 	get_link) get_link ;;
 esac
