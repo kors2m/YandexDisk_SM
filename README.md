@@ -32,7 +32,7 @@ A servicemenu which allows easy access to Yandex.Disk features.
 * kdialog
 * xsel
 
-### Add autostart yandex-disk daemon to systemd / Добавляем демон яндекс-диска в автозагрузку systemd
+#### Add autostart yandex-disk daemon to systemd / Добавляем демон яндекс-диска в автозагрузку systemd
 
 Create unit file /etc/systemd/system/yadisk@.service and edit:
 
@@ -54,4 +54,5 @@ WantedBy=multi-user.target
 ```
 
 Enable a unit to be started on bootup:
+
 ```# systemctl enable yadisk@USERNAME.service ```
