@@ -8,7 +8,7 @@ Servicemenu, который позволяет получить быстрый �
 
 **Зависимости:**
 * Консольный клиент для Linux - http://help.yandex.ru/disk/cli-clients.xml
-  Для арча скачиваем с aur https://aur.archlinux.org/packages/yandex-disk/
+<br/>Для арча скачиваем с aur https://aur.archlinux.org/packages/yandex-disk/
 * notify-send
 * kdialog
 * xsel
@@ -27,7 +27,7 @@ A servicemenu which allows easy access to Yandex.Disk features.
 
 **Dependencies:**
 * Console client for Linux - http://help.yandex.com/disk/cli-clients.xml
-  For arch linux download from aur - https://aur.archlinux.org/packages/yandex-disk/
+<br/>For arch linux download from aur - https://aur.archlinux.org/packages/yandex-disk/
 * notify-send
 * kdialog
 * xsel
@@ -53,5 +53,5 @@ Restart=on-failure
 WantedBy=multi-user.target
 ```
 
-Enable a unit to be started on bootup: 
+Enable a unit to be started on bootup: <br/>
 ```# systemctl enable yadisk@USERNAME.service ```
