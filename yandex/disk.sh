@@ -89,7 +89,7 @@ load_ru(){
 
 load_en(){
 	title="Yandex.Disk"
-	error="Missing error"
+	error="Error occurred"
 	error_save="Error saving"
 	success_save="File <b>${FILE_URL##*/}</b> successfully saved"
 	choose_dir="Choose directory"
