@@ -2,11 +2,11 @@
 -------------------------
 Servicemenu, который позволяет получить быстрый доступ к сервису Яндекс.Диск
 
-Возможности:
+**Возможности:**
 * Скопировать публичную ссылку на файл в буфер обмена
 * Сохранить файл в вашу папку Яндекс.Диск
 
-Зависимости:
+**Зависимости:**
 * Консольный клиент для Linux - http://help.yandex.ru/disk/cli-clients.xml
   Для арча скачиваем с aur https://aur.archlinux.org/packages/yandex-disk/
 * notify-send
@@ -18,22 +18,22 @@ Yandex.Disk ServiceMenu
 -----------------------
 A servicemenu which allows easy access to Yandex.Disk features.
 
-Features:
+**Features:**
 * Copy Public URL to clipboard
 * Copy file to your Yandex.Disk folder
 
-Installation:
+**Installation:**
 * Run installation script - ./install-it.sh
 
-Dependencies:
+**Dependencies:**
 * Console client for Linux - http://help.yandex.com/disk/cli-clients.xml
   For arch linux download from aur - https://aur.archlinux.org/packages/yandex-disk/
 * notify-send
 * kdialog
 * xsel
 
-Tip:
-* Add autostart yandex-disk daemon to systemd / Добавляем демон яндекс-диска в автозагрузку systemd
+### Add autostart yandex-disk daemon to systemd / Добавляем демон яндекс-диска в автозагрузку systemd
+
 Create unit file /etc/systemd/system/yadisk@.service and edit:
 
 ```
@@ -54,4 +54,4 @@ WantedBy=multi-user.target
 ```
 
 Enable a unit to be started on bootup:
-# systemctl enable yadisk@<-USER->.service 
+```# systemctl enable yadisk@USERNAME.service ```
