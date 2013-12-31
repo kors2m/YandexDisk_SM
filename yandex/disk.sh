@@ -100,10 +100,11 @@ load_en(){
 	daemon="Error: daemon not running"
 }
 
-case "$LANGUAGE" in
-	ru ) load_ru ;;
-	*) load_en ;;
-esac
+if [[ $LANGUAGE != "en" ]]; then
+	load_$LANGUAGE
+else
+	load_en
+fi
 
 is_run_daemon
 if [[ $? = 1 ]]; then
