@@ -65,7 +65,7 @@ save(){
 
 	path=`kdialog --getsavefilename  "$YANDEX_DISK_HOME/${FILE_URL##*/}" --title "$choose_dir"`
 	if [[ $? = 0 ]]; then
-		copy $path
+		copy "$path"
 	fi
 }
 
@@ -100,7 +100,7 @@ load_en(){
 	daemon="Error: daemon not running"
 }
 
-if [[ $LANGUAGE != "en" ]]; then
+if [[ $LANGUAGE != "" ]]; then
 	load_$LANGUAGE
 else
 	load_en
