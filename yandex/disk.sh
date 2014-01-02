@@ -25,29 +25,29 @@ get_link(){
 }
 
 publish(){
-	msg=`yandex-disk publish "$FILE_URL"`
+	pub=`yandex-disk publish "$FILE_URL"`
 	if [[ $? = 0 ]]; then
-		echo $msg | xsel -i -b 
-		notify "$available_link"
+		echo $pub | xsel -i -b 
+		notify "$Available_link"
 	else
-		notify "$error"
+		notify "$Error"
 	fi	
 }
 
 is_file_exists(){
-    if [ -f "$YANDEX_DISK_HOME/${FILE_URL##*/}"  -o -d "$YANDEX_DISK_HOME/${FILE_URL##*/}" ]; then
-		kdialog --warningyesno "$file_replace" --title "$title"
+    if [ -f "$1" ]; then
+		kdialog --warningyesno "$File_replace" --title "$Title"
     fi	
 }
 
 copy() {
-    is_file_exists
+    is_file_exists "$1"
     if [ $? = 0 ]; then
 		cp -rf "$FILE_URL" "$1"
 		if [[ $? = 0 ]]; then
-			notify "$success_save"
+			notify "$Success_save"
 		else
-			notify "$error_save"			
+			notify "$Error_save"			
 		fi
     fi
 }
@@ -59,11 +59,11 @@ is_path_matches_yadisk(){
 save(){
 	is_path_matches_yadisk
 	if [[ $? = 0 ]]; then
-		notify "$file_exists"
+		notify "$File_exists"
 		exit;
 	fi
 
-	path=`kdialog --getsavefilename  "$YANDEX_DISK_HOME/${FILE_URL##*/}" --title "$choose_dir"`
+	path=`kdialog --getsavefilename  "$YANDEX_DISK_HOME/${FILE_URL##*/}" --title "$Choose_dir"`
 	if [[ $? = 0 ]]; then
 		copy "$path"
 	fi
@@ -76,28 +76,28 @@ is_run_daemon(){
 
 #Translations
 load_ru(){
-	title="Яндекс.Диск"
-	error="Произошла ошибка"
-	error_save="Ошибка при сохранении"
-	success_save="Файл <b>${FILE_URL##*/}</b> успешно сохранен"
-	choose_dir="Выберите директорию"
-	file_replace="Файл с именем <b>${FILE_URL##*/}</b> уже существует в директории $title<br/><br/>Заменить?"
-	available_link="Публичная ссылка на файл <b>${FILE_URL##*/}</b> скопирована в буфер"
-	file_exists="Этот файл уже и так находится в вашей папке $title"
-	daemon="Ошибка: демон не запущен"
+	Title="Яндекс.Диск"
+	Error="Произошла ошибка"
+	Error_save="Ошибка при сохранении"
+	Success_save="Файл <b>${FILE_URL##*/}</b> успешно сохранен"
+	Choose_dir="Выберите директорию"
+	File_replace="Файл с именем <b>${FILE_URL##*/}</b> уже существует в директории $title<br/><br/>Заменить?"
+	Available_link="Публичная ссылка на файл <b>${FILE_URL##*/}</b> скопирована в буфер"
+	File_exists="Этот файл уже и так находится в вашей папке $title"
+	Daemon="Ошибка: демон не запущен"
 }
 
 load_en(){
-	title="Yandex.Disk"
-	error="Error occurred"
-	error_save="Error saving"
-	success_save="File <b>${FILE_URL##*/}</b> successfully saved"
-	choose_dir="Choose directory"
-	file_replace="A file named <b>${FILE_URL##*/}</b> already exists in your $title folder.<br/><br/>
-			Would you like to replace it and copy a public link to our clipboard?"
-	available_link="Public link to <b>${FILE_URL##*/}</b> copied to clipboard"
-	file_exists="File is already in you $title folder"
-	daemon="Error: daemon not running"
+	Title="Yandex.Disk"
+	Error="Error occurred"
+	Error_save="Error saving"
+	Success_save="File <b>${FILE_URL##*/}</b> successfully saved"
+	Choose_dir="Choose directory"
+	File_replace="A file named <b>${FILE_URL##*/}</b> already exists in your $title folder."
+	File_replace2="<br/><br/>Would you like to replace it and copy a public link to our clipboard?"
+	Available_link="Public link to <b>${FILE_URL##*/}</b> copied to clipboard"
+	File_exists="File is already in you $title folder"
+	Daemon="Error: daemon not running"
 }
 
 if [[ $LANGUAGE != "" ]]; then
