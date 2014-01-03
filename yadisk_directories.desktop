@@ -2,7 +2,7 @@
 Type=Service
 ServiceTypes=KonqPopupMenu/Plugin
 MimeType=inode/directory;
-Actions=getPublicLink;save;
+Actions=getPublicLink;
 X-KDE-Submenu=Yandex.Disk
 X-KDE-Submenu[ru]=Яндекс.Диск
 X-KDE-StartupNotify=false
@@ -14,9 +14,3 @@ Name=Copy public link
 Name[ru]=Скопировать публичную ссылку
 Exec=`kde4-config --localprefix`share/kde4/services/yandex/disk.sh get_link "%f" 
 Exec[ru]=`kde4-config --localprefix`share/kde4/services/yandex/disk.sh get_link "%f" ru
-
-[Desktop Action save]
-Name=Save...
-Name[ru]=Сохранить...
-Exec=`kde4-config --localprefix`share/kde4/services/yandex/disk.sh save "%f" 
-Exec[ru]=`kde4-config --localprefix`share/kde4/services/yandex/disk.sh save "%f" ru

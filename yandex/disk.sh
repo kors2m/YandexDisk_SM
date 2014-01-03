@@ -7,20 +7,21 @@ PATH_SERVICE_MENU="`kde4-config --localprefix`share/kde4/services/"
 
 
 notify(){
-	notify-send -i "$PATH_SERVICE_MENU"yandex/logo.png "$title" "$1"
+	notify-send -i "$PATH_SERVICE_MENU"yandex/logo.png "$Title" "$1"
 }
 
 get_link(){
 	is_path_matches_yadisk
 	if [[ $? = 0 ]]; then
 		publish
-		exit 0
+		exit
 	fi
 
-	is_file_exists
+	is_exists "$YANDEX_DISK_HOME/${FILE_URL##*/}"
 	if [[ $? = 0 ]]; then
 		rm -f "$YANDEX_DISK_HOME/${FILE_URL##*/}"
 		publish 
+		exit
 	fi
 }
 
@@ -34,14 +35,17 @@ publish(){
 	fi	
 }
 
-is_file_exists(){
-    if [ -f "$1" ]; then
+is_exists(){
+    	if [ -f "$1" ]; then
 		kdialog --warningyesno "$File_replace" --title "$Title"
-    fi	
+   	elif [ -d "$1" ]; then
+		kdialog --sorry "$Folder_exists" 
+		exit
+	fi
 }
 
 copy() {
-    is_file_exists "$1"
+    is_exists "$1"
     if [ $? = 0 ]; then
 		cp -rf "$FILE_URL" "$1"
 		if [[ $? = 0 ]]; then
@@ -85,6 +89,8 @@ load_ru(){
 	Available_link="Публичная ссылка на файл <b>${FILE_URL##*/}</b> скопирована в буфер"
 	File_exists="Этот файл уже и так находится в вашей папке $title"
 	Daemon="Ошибка: демон не запущен"
+	Folder_exists="Не удалось скопировать ссылку. <b>${FILE_URL##*/}</b> уже существует в папке $title.
+		<br/><br/>Чтобы получить ссылку на папку с таким же именем, необходимо переименовать одну из них. "
 }
 
 load_en(){
@@ -98,6 +104,8 @@ load_en(){
 	Available_link="Public link to <b>${FILE_URL##*/}</b> copied to clipboard"
 	File_exists="File is already in you $title folder"
 	Daemon="Error: daemon not running"
+	Folder_exists="Не удалось скопировать ссылку. <b>${FILE_URL##*/}</b> уже существует в папке $title.
+		<br/><br/>Чтобы получить ссылку на папку с таким же именем, необходимо переименовать одну из них. "
 }
 
 if [[ $LANGUAGE != "" ]]; then
