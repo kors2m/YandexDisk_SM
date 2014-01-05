@@ -19,10 +19,14 @@ get_link(){
 
 	is_exists "$YANDEX_DISK_HOME/${FILE_URL##*/}"
 	if [[ $? = 0 ]]; then
-		FILE_URL=$(get_newname)
+		newname="$(get_newname)"
+		cp -f "$FILE_URL" "$newname"
+		FILE_URL="$newname"
 		publish 
 	elif [[ $? = 1 ]]; then
 		rm -f "$YANDEX_DISK_HOME/${FILE_URL##*/}"
+		publish 
+	elif [[ $? = 2 ]]; then
 		publish 
 	fi
 	exit
@@ -44,6 +48,8 @@ is_exists(){
    	elif [ -d "$1" ]; then
 		kdialog --sorry "$Folder_exists" 
 		exit
+	else
+		return 2
 	fi
 }
 
@@ -69,18 +75,6 @@ get_newname(){
 	echo "$YANDEX_DISK_HOME/$name ($c)$ext"           
 }
 
-copy() {
-    is_exists "$1"
-    if [ $? = 1 ]; then
-		cp -f "$FILE_URL" "$1"
-		if [[ $? = 0 ]]; then
-			notify "$Success_save"
-		else
-			notify "$Error_save"			
-		fi
-    fi
-}
-
 is_path_matches_yadisk(){
 	echo $FILE_URL | grep "$YANDEX_DISK_HOME"
 }
@@ -89,13 +83,22 @@ save(){
 	is_path_matches_yadisk
 	if [[ $? = 0 ]]; then
 		notify "$File_exists"
-		exit;
+		exit
 	fi
 
 	path=`kdialog --getsavefilename  "$YANDEX_DISK_HOME/${FILE_URL##*/}" --title "$Choose_dir"`
 	if [[ $? = 0 ]]; then
-		copy "$path"
+		is_exists "$path"
+	    if [ $? = 2 ]; then
+			cp -f "$FILE_URL" "$path"
+			if [[ $? = 0 ]]; then
+				notify "$Success_save"
+				exit
+			fi
+	    fi
 	fi
+	notify "$Error_save"	
+	exit
 }
 
 is_run_daemon(){
