@@ -19,10 +19,13 @@ get_link(){
 
 	is_exists "$YANDEX_DISK_HOME/${FILE_URL##*/}"
 	if [[ $? = 0 ]]; then
+		FILE_URL=$(get_newname)
+		publish 
+	elif [[ $? = 1 ]]; then
 		rm -f "$YANDEX_DISK_HOME/${FILE_URL##*/}"
 		publish 
-		exit
 	fi
+	exit
 }
 
 publish(){
@@ -37,17 +40,39 @@ publish(){
 
 is_exists(){
     	if [ -f "$1" ]; then
-		kdialog --warningyesno "$File_replace" --title "$Title"
+		kdialog --warningyesnocancel "$File_replace" --yes-label "Оставить оба"  --no-label "Заменить"
    	elif [ -d "$1" ]; then
 		kdialog --sorry "$Folder_exists" 
 		exit
 	fi
 }
 
+get_newname(){
+	name="${FILE_URL##*/}"
+	ext=""
+
+	if [[ "$name" =~ (\..+)$ ]]; then
+	    ext="${BASH_REMATCH[1]}"
+	    name="${name%\.*}"
+
+	    if [[ "$name" =~ ^(.*)[[:space:]]\([[:digit:]]+\)$ ]]; then
+	        name="${BASH_REMATCH[1]}"
+	    fi
+	fi    
+
+	c=1
+	while [ -f "$YANDEX_DISK_HOME/$name ($c)$ext" ]
+	do
+	    c=$[$c+1]
+	done
+
+	echo "$YANDEX_DISK_HOME/$name ($c)$ext"           
+}
+
 copy() {
     is_exists "$1"
-    if [ $? = 0 ]; then
-		cp -rf "$FILE_URL" "$1"
+    if [ $? = 1 ]; then
+		cp -f "$FILE_URL" "$1"
 		if [[ $? = 0 ]]; then
 			notify "$Success_save"
 		else
