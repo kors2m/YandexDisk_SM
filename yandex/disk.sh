@@ -1,8 +1,8 @@
 #!/bin/bash 
 
-ACTION=$1
-FILE_URL=$2
-LANGUAGE=$3
+ACTION="$1"
+FILE_URL="$2"
+LANGUAGE="$3"
 PATH_SERVICE_MENU="`kde4-config --localprefix`share/kde4/services/"
 
 
@@ -11,30 +11,39 @@ notify(){
 }
 
 get_link(){
-	is_path_matches_yadisk
-	if [[ $? = 0 ]]; then
+	if is_path_matches_yadisk; then
 		publish
 		exit
 	fi
 
-	is_exists "$YANDEX_DISK_HOME/${FILE_URL##*/}"
-	if [[ $? = 0 ]]; then
-		newname="$(get_newname)"
-		cp -f "$FILE_URL" "$newname"
-		FILE_URL="$newname"
-		publish 
-	elif [[ $? = 1 ]]; then
-		rm -f "$YANDEX_DISK_HOME/${FILE_URL##*/}"
-		publish 
-	elif [[ $? = 3 ]]; then
-		publish 
+	# all files placed in the root of Yandex.Disk
+	if is_exists_dir "$YANDEX_DISK_HOME/${FILE_URL##*/}"; then
+		kdialog --sorry "$Folder_exists" 
+		exit
 	fi
+
+	if is_exists "$YANDEX_DISK_HOME/${FILE_URL##*/}"; then
+		kdialog --warningyesnocancel "$File_replace" --yes-label "$Save_both"  --no-label "$Replace"
+		retval=$?
+		if  [ $retval -eq 0 ]; then					# save both files
+			newname_url="$(get_newname)"
+			cp -f "$FILE_URL" "$newname_url"
+			FILE_URL="$newname_url"
+		elif [ $retval -eq 1 ]; then					# replace
+			publish "--overwrite"
+			exit
+		else											# cancel
+			exit
+		fi
+	fi
+
+	publish
 	exit
 }
 
 publish(){
-	pub=`yandex-disk publish "$FILE_URL"`
-	if [[ $? = 0 ]]; then
+	pub=`yandex-disk publish "$FILE_URL" "$1"`
+	if [ $? = 0 ]; then
 		echo $pub | xsel -i -b 
 		notify "$Available_link"
 	else
@@ -42,23 +51,13 @@ publish(){
 	fi	
 }
 
-is_exists(){
-    	if [ -f "$1" ]; then
-		kdialog --warningyesnocancel "$File_replace" --yes-label "Оставить оба"  --no-label "Заменить"
-   	elif [ -d "$1" ]; then
-		kdialog --sorry "$Folder_exists" 
-		exit
-	else
-		return 3
-	fi
+
+is_exists_dir(){
+	[ -d "$1" ]
 }
 
-is_exists2(){
-	if [ -f "$1" ]; then
-		return 0
-	else
-		return 1
-	fi
+is_exists(){
+	[ -f "$1" ]
 }
 
 get_newname(){
@@ -84,35 +83,34 @@ get_newname(){
 }
 
 is_path_matches_yadisk(){
-	echo $FILE_URL | grep "$YANDEX_DISK_HOME"
+	echo "$FILE_URL" | grep "$YANDEX_DISK_HOME"
 }
 
 save(){
-	is_path_matches_yadisk
-	if [[ $? = 0 ]]; then
+	if is_path_matches_yadisk; then
 		notify "$File_exists"
 		exit
 	fi
 
 	while true; do
 		path=`kdialog --getsavefilename  "$YANDEX_DISK_HOME/${FILE_URL##*/}" --title "$Choose_dir"`
-		if [[ $? = 0 ]]; then
-			if is_exists2 "$path"; then
-				kdialog --warningyesno "Файл с таким именем уже существует в выбранной выми директории. <br><br>Хотите заменить?" 
-				if [[ $? = 0 ]]; then	# yes
+		if [ $? = 0 ]; then
+			if is_exists "$path"; then
+				kdialog --warningyesno "$File_replace" 
+				if [ $? = 0 ]; then	# yes
 					break
 				fi
 			else		# the file not exists
 				break
 			fi
-		elif [[ $? = 1 ]]; then 	# cancel
+		else		# cancel
 			exit
 		fi
 	done
 
-	# coping a file
+	# coping a file with overwrite
 	cp -rf "$FILE_URL" "$path"
-	if [[ $? = 0 ]]; then
+	if [ $? = 0 ]; then
 		notify "$Success_save"
 	else
 		notify "$Error_save"
@@ -121,11 +119,11 @@ save(){
 }
 
 is_run_daemon(){
-	pgrep yandex-disk
+	! [ `pgrep yandex-disk` ]
 }
 
 
-#Translations
+# translations
 load_ru(){
 	Title="Яндекс.Диск"
 	Error="Произошла ошибка"
@@ -133,6 +131,8 @@ load_ru(){
 	Success_save="Файл <b>${FILE_URL##*/}</b> успешно сохранен"
 	Choose_dir="Выберите директорию"
 	File_replace="Файл с именем <b>${FILE_URL##*/}</b> уже существует в директории $title<br/><br/>Заменить?"
+	Replace="Заменить"
+	Save_both="Оставить оба"
 	Available_link="Публичная ссылка на файл <b>${FILE_URL##*/}</b> скопирована в буфер"
 	File_exists="Этот файл уже и так находится в вашей папке $title"
 	Daemon="Ошибка: демон не запущен"
@@ -148,6 +148,8 @@ load_en(){
 	Choose_dir="Choose directory"
 	File_replace="A file named <b>${FILE_URL##*/}</b> already exists in your $title folder."
 	File_replace2="<br/><br/>Would you like to replace it and copy a public link to our clipboard?"
+	Replace="Replace"
+	Save_both="Save both"
 	Available_link="Public link to <b>${FILE_URL##*/}</b> copied to clipboard"
 	File_exists="File is already in you $title folder"
 	Daemon="Error: daemon not running"
@@ -155,15 +157,15 @@ load_en(){
 		<br/><br/>Чтобы получить ссылку на папку с таким же именем, необходимо переименовать одну из них. "
 }
 
-if [[ $LANGUAGE != "" ]]; then
+# load locale
+if [ $LANGUAGE != "" ]; then
 	load_$LANGUAGE
 else
 	load_en
 fi
 
-is_run_daemon
-if [[ $? = 1 ]]; then
-	notify "$daemon"
+if is_run_daemon; then
+	notify "$Daemon"
 	exit
 fi
 
