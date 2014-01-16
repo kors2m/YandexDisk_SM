@@ -26,7 +26,7 @@ get_link(){
 	elif [[ $? = 1 ]]; then
 		rm -f "$YANDEX_DISK_HOME/${FILE_URL##*/}"
 		publish 
-	elif [[ $? = 2 ]]; then
+	elif [[ $? = 3 ]]; then
 		publish 
 	fi
 	exit
@@ -49,7 +49,15 @@ is_exists(){
 		kdialog --sorry "$Folder_exists" 
 		exit
 	else
-		return 2
+		return 3
+	fi
+}
+
+is_exists2(){
+	if [ -f "$1" ]; then
+		return 0
+	else
+		return 1
 	fi
 }
 
@@ -86,18 +94,29 @@ save(){
 		exit
 	fi
 
-	path=`kdialog --getsavefilename  "$YANDEX_DISK_HOME/${FILE_URL##*/}" --title "$Choose_dir"`
-	if [[ $? = 0 ]]; then
-		is_exists "$path"
-	    if [ $? = 2 ]; then
-			cp -f "$FILE_URL" "$path"
-			if [[ $? = 0 ]]; then
-				notify "$Success_save"
-				exit
+	while true; do
+		path=`kdialog --getsavefilename  "$YANDEX_DISK_HOME/${FILE_URL##*/}" --title "$Choose_dir"`
+		if [[ $? = 0 ]]; then
+			if is_exists2 "$path"; then
+				kdialog --warningyesno "Файл с таким именем уже существует в выбранной выми директории. <br><br>Хотите заменить?" 
+				if [[ $? = 0 ]]; then	# yes
+					break
+				fi
+			else		# the file not exists
+				break
 			fi
-	    fi
+		elif [[ $? = 1 ]]; then 	# cancel
+			exit
+		fi
+	done
+
+	# coping a file
+	cp -rf "$FILE_URL" "$path"
+	if [[ $? = 0 ]]; then
+		notify "$Success_save"
+	else
+		notify "$Error_save"
 	fi
-	notify "$Error_save"	
 	exit
 }
 
