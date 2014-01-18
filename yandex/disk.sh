@@ -128,7 +128,7 @@ load_ru(){
 	Error_save="Ошибка при сохранении"
 	Success_save="Файл <b>${FILE_URL##*/}</b> успешно сохранен"
 	Choose_dir="Выберите директорию"
-	File_replace="Файл с именем <b>${FILE_URL##*/}</b> уже существует в директории $Title<br/><br/>Заменить?"
+	File_replace="Файл с именем <b>${FILE_URL##*/}</b> уже существует в директории $Title."
 	Replace="Заменить"
 	Save_both="Оставить оба"
 	Available_link="Публичная ссылка на файл <b>${FILE_URL##*/}</b> скопирована в буфер"
