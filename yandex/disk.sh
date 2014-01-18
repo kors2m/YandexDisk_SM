@@ -3,7 +3,7 @@
 ACTION="$1"
 FILE_URL="$2"
 LANGUAGE="$3"
-PATH_SERVICE_MENU="`kde4-config --localprefix`share/kde4/services/"
+PATH_SERVICE_MENU=$(kde4-config --localprefix)"share/kde4/services/"
 
 notify(){
 	notify-send -i "$PATH_SERVICE_MENU"yandex/logo.png "$Title" "$1"
@@ -31,7 +31,7 @@ get_link(){
 		elif [ $retval -eq 1 ]; then					# replace
 			publish "--overwrite"
 			exit
-		else											# cancel
+		elif [ $retval -eq 2 ]; then					# cancel
 			exit
 		fi
 	fi
@@ -41,9 +41,9 @@ get_link(){
 }
 
 publish(){
-	pub=`yandex-disk publish "$FILE_URL" "$1"`
+	pub=$(yandex-disk publish "$FILE_URL" "$1")
 	if [ $? = 0 ]; then
-		echo $pub | xsel -i -b 
+		echo "$pub" | xsel -i -b 
 		notify "$Available_link"
 	else
 		notify "$Error"
@@ -74,7 +74,7 @@ get_newname(){
 	c=1
 	while [ -f "$YANDEX_DISK_HOME/$name ($c)$ext" ]
 	do
-	    c=$[$c+1]
+	    (( c++ ))
 	done
 
 	echo "$YANDEX_DISK_HOME/$name ($c)$ext"           
@@ -91,8 +91,9 @@ save(){
 	fi
 
 	while true; do
-		path=`kdialog --getsavefilename  "$YANDEX_DISK_HOME/${FILE_URL##*/}" --title "$Choose_dir"`
-		if [ $? = 0 ]; then
+		path=$(kdialog --getsavefilename  "$YANDEX_DISK_HOME/${FILE_URL##*/}" --title "$Choose_dir")
+		retval=$?
+		if [ $retval = 0 ]; then
 			if is_exists "$path"; then
 				kdialog --warningyesno "$File_replace" --title "$Title"
 				if [ $? = 0 ]; then	# yes
@@ -101,7 +102,7 @@ save(){
 			else		# the file not exists
 				break
 			fi
-		else		# cancel
+		elif [ $retval = 1 ]; then				# cancel
 			exit
 		fi
 	done
@@ -117,7 +118,7 @@ save(){
 }
 
 is_run_daemon(){
-	! [ `pgrep yandex-disk` ]
+	! [ $(pgrep yandex-disk) ]
 }
 
 # translations
@@ -155,8 +156,8 @@ load_en(){
 }
 
 # loading localization
-if [ $LANGUAGE != "" ]; then
-	load_$LANGUAGE
+if [ "$LANGUAGE" != "" ]; then
+	load_"$LANGUAGE"
 else
 	load_en
 fi
@@ -166,7 +167,7 @@ if is_run_daemon; then
 	exit
 fi
 
-YANDEX_DISK_HOME=`yandex-disk status | sed -n 2p | cut -f 2 -d "'"`
+YANDEX_DISK_HOME=$(yandex-disk status | sed -n 2p | cut -f 2 -d "'")
 
 case "$ACTION" in
 	save) save ;;
