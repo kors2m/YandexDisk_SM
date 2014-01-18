@@ -5,7 +5,6 @@ FILE_URL="$2"
 LANGUAGE="$3"
 PATH_SERVICE_MENU="`kde4-config --localprefix`share/kde4/services/"
 
-
 notify(){
 	notify-send -i "$PATH_SERVICE_MENU"yandex/logo.png "$Title" "$1"
 }
@@ -18,12 +17,12 @@ get_link(){
 
 	# all files placed in the root of Yandex.Disk
 	if is_exists_dir "$YANDEX_DISK_HOME/${FILE_URL##*/}"; then
-		kdialog --sorry "$Folder_exists" 
+		kdialog --sorry "$Folder_exists" --title "$Title"
 		exit
 	fi
 
 	if is_exists "$YANDEX_DISK_HOME/${FILE_URL##*/}"; then
-		kdialog --warningyesnocancel "$File_replace" --yes-label "$Save_both"  --no-label "$Replace"
+		kdialog --warningyesnocancel "$File_replace" --yes-label "$Save_both"  --no-label "$Replace" --title "$Title"
 		retval=$?
 		if  [ $retval -eq 0 ]; then					# save both files
 			newname_url="$(get_newname)"
@@ -50,7 +49,6 @@ publish(){
 		notify "$Error"
 	fi	
 }
-
 
 is_exists_dir(){
 	[ -d "$1" ]
@@ -96,7 +94,7 @@ save(){
 		path=`kdialog --getsavefilename  "$YANDEX_DISK_HOME/${FILE_URL##*/}" --title "$Choose_dir"`
 		if [ $? = 0 ]; then
 			if is_exists "$path"; then
-				kdialog --warningyesno "$File_replace" 
+				kdialog --warningyesno "$File_replace" --title "$Title"
 				if [ $? = 0 ]; then	# yes
 					break
 				fi
@@ -122,7 +120,6 @@ is_run_daemon(){
 	! [ `pgrep yandex-disk` ]
 }
 
-
 # translations
 load_ru(){
 	Title="Яндекс.Диск"
@@ -130,14 +127,14 @@ load_ru(){
 	Error_save="Ошибка при сохранении"
 	Success_save="Файл <b>${FILE_URL##*/}</b> успешно сохранен"
 	Choose_dir="Выберите директорию"
-	File_replace="Файл с именем <b>${FILE_URL##*/}</b> уже существует в директории $title<br/><br/>Заменить?"
+	File_replace="Файл с именем <b>${FILE_URL##*/}</b> уже существует в директории $Title<br/><br/>Заменить?"
 	Replace="Заменить"
 	Save_both="Оставить оба"
 	Available_link="Публичная ссылка на файл <b>${FILE_URL##*/}</b> скопирована в буфер"
-	File_exists="Этот файл уже и так находится в вашей папке $title"
+	File_exists="Этот файл уже находится в вашей папке $Title"
 	Daemon="Ошибка: демон не запущен"
-	Folder_exists="Не удалось скопировать ссылку. <b>${FILE_URL##*/}</b> уже существует в папке $title.
-		<br/><br/>Чтобы получить ссылку на папку с таким же именем, необходимо переименовать одну из них. "
+	Folder_exists="Не удалось скопировать ссылку. <b>${FILE_URL##*/}</b> уже существует в папке $Title.
+		<br/><br/>Чтобы получить ссылку на папку с таким же именем, необходимо переименовать одну из них."
 }
 
 load_en(){
@@ -146,18 +143,18 @@ load_en(){
 	Error_save="Error saving"
 	Success_save="File <b>${FILE_URL##*/}</b> successfully saved"
 	Choose_dir="Choose directory"
-	File_replace="A file named <b>${FILE_URL##*/}</b> already exists in your $title folder."
-	File_replace2="<br/><br/>Would you like to replace it and copy a public link to our clipboard?"
+	File_replace="A file named <b>${FILE_URL##*/}</b> already exists in your $Title folder.
+		<br/><br/>Would you like to replace it and copy a public link to our clipboard?"
 	Replace="Replace"
 	Save_both="Save both"
 	Available_link="Public link to <b>${FILE_URL##*/}</b> copied to clipboard"
-	File_exists="File is already in you $title folder"
+	File_exists="This file is already in your $Title folder"
 	Daemon="Error: daemon not running"
-	Folder_exists="Не удалось скопировать ссылку. <b>${FILE_URL##*/}</b> уже существует в папке $title.
-		<br/><br/>Чтобы получить ссылку на папку с таким же именем, необходимо переименовать одну из них. "
+	Folder_exists="Failed to copy the link. <b>${FILE_URL##*/}</b> is already in your $Title folder.
+		<br/><br/>To get a link to a folder with the same name, you must rename one of them."
 }
 
-# load locale
+# loading localization
 if [ $LANGUAGE != "" ]; then
 	load_$LANGUAGE
 else

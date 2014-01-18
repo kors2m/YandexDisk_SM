@@ -1,40 +1,49 @@
 Яндекс.Диск ServiceMenu 
--------------------------
+-----------------------
+
 Servicemenu, который позволяет получить быстрый доступ к сервису Яндекс.Диск
 
 **Возможности:**
-* Скопировать публичную ссылку на файл в буфер обмена
-* Сохранить файл в вашу папку Яндекс.Диск
+
+- Скопировать публичную ссылку на файл в буфер обмена
+- Сохранить файл в вашу папку Яндекс.Диск
 
 **Зависимости:**
-* Консольный клиент для Linux - http://help.yandex.ru/disk/cli-clients.xml
-<br/>Для арча скачиваем с aur https://aur.archlinux.org/packages/yandex-disk/
-* notify-send
-* kdialog
-* xsel
 
+- Консольный клиент для Linux - http://help.yandex.ru/disk/cli-clients.xml
+<br/>Для ArchLinux скачиваем с aur https://aur.archlinux.org/packages/yandex-disk/
+- `libnotify` 
+- `kdialog`
+- `xsel`
+
+------------------------
 
 Yandex.Disk ServiceMenu
 -----------------------
 A servicemenu which allows easy access to Yandex.Disk features.
 
 **Features:**
-* Copy Public URL to clipboard
-* Copy file to your Yandex.Disk folder
+
+- Copy Public URL to clipboard
+- Copy file to your Yandex.Disk folder
 
 **Installation:**
-* Run installation script - ./install-it.sh
+
+- Run installation script - ./install-it.sh
 
 **Dependencies:**
-* Console client for Linux - http://help.yandex.com/disk/cli-clients.xml
+
+- Console client for Linux - http://help.yandex.com/disk/cli-clients.xml
 <br/>For arch linux download from aur - https://aur.archlinux.org/packages/yandex-disk/
-* notify-send
-* kdialog
-* xsel
+- `libnotify`
+- `kdialog`
+- `xsel`
 
-#### Add autostart yandex-disk daemon to systemd / Добавляем демон яндекс-диска в автозагрузку systemd
+----------------------------
 
-Create unit file /etc/systemd/system/yadisk@.service and edit:
+### Add autostart yandex-disk daemon to systemd | Добавляем демон яндекс-диска в автозагрузку systemd
+
+Create unit file `/etc/systemd/system/yadisk@.service` and edit:
 
 ```
 [Unit]
@@ -54,4 +63,4 @@ WantedBy=multi-user.target
 ```
 
 Enable a unit to be started on bootup: <br/>
-```# systemctl enable yadisk@USERNAME.service ```
+`# systemctl enable yadisk@USERNAME.service `
